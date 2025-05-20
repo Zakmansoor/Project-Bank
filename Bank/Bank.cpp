@@ -6,6 +6,9 @@
 #include <vector>
 using namespace std;
 string FileName = "Client.txt";
+fstream file;
+int indexfile = 1;
+const int Max_Size = 1024;
 struct
 	Client
 {
@@ -16,6 +19,23 @@ struct
 	double Balance = 00.00;
 	bool MarkDeleted = false;
 };
+void OpenFile()
+{
+	if (file.is_open())
+		file.close();
+	string FileName = "client" + to_string(indexfile) + ".txt";
+	file.open(FileName, ios::out | ios::app);
+	if (!file.is_open())
+		cout << "error When Opern file";
+	indexfile++;
+
+}
+void WriteFile(string& Data)
+{
+	if (!file.is_open() || file.tellp() > Max_Size)
+		OpenFile();
+	file << Data;
+}
 
 int ReadPositiveNumber(string message) {
 	int Number;
@@ -32,16 +52,15 @@ int ReadPositiveNumber(string message) {
 }
 string ReadString(string message)
 {
-
 	string str;
-	cout  << message << " :" << endl;
+	cout << message << " :" << endl;
 	getline(cin >> ws, str);
 	return str;
 }
 void HeaderAction(int choice)
 {
 	switch (choice) {
-	case 1:cout << right << setw(70) << " | Page Show All Client |" << "\n\n\n";
+	case 1:cout << right << setw(70) << " | Page Show All Clients |" << "\n\n\n";
 		break;
 	case 2:cout << right << setw(70) << " | Page Add  Client |" << "\n\n\n";
 		break;
@@ -50,14 +69,12 @@ void HeaderAction(int choice)
 	case 4:cout << right << setw(70) << " | Page  Delete Client |" << "\n\n\n";
 	case 5:cout << right << setw(70) << " | Page  Search  Client |" << "\n\n\n";
 		break;
-	default :cout << right << setw(70) << " | Home Page     |" << "\n\n\n";
+	default:cout << right << setw(70) << " | Home Page     |" << "\n\n\n";
 		break;
 	}
 }
-
 char ReadChar(string message)
 {
-
 	char letter;
 	cout << message << " :" << endl;
 	cin >> letter;
@@ -67,9 +84,9 @@ char ReadChar(string message)
 		cin >> letter;
 
 	}
-
 	return letter;
-}string ConvertRecordToLineString(Client client, string delim = "#//#")
+}
+string ConvertRecordToLineString(Client client, string delim = "#//#")
 {
 	string Record = "";
 	Record += client.AccountNumber + delim;
@@ -82,7 +99,7 @@ char ReadChar(string message)
 }
 vector<string> SplitString(string st, string delim = "#//#")
 {
-	short pos ;
+	short pos;
 	string word = "";
 	vector<string> vword;
 	while ((pos = st.find(delim)) != std::string::npos) {
@@ -92,7 +109,6 @@ vector<string> SplitString(string st, string delim = "#//#")
 			vword.push_back(word);
 		}
 		st.erase(0, pos + delim.length());
-
 	}
 	if (st != "")
 	{
@@ -119,11 +135,11 @@ vector <Client> LoadCleintsDataFromFile(string FileName)
 	vector <Client> vClients;
 	Client client;
 
-	fstream MyFile;
-	MyFile.open(FileName, ios::in);//read Mode
-	if (MyFile.is_open())
+	fstream file;
+	file.open(FileName, ios::in);//read Mode
+	if (file.is_open())
 	{
-		while (getline(MyFile, Line))
+		while (getline(file, Line))
 		{
 			if (Line != "") {
 				client = ConvertRecordToClietData(Line);
@@ -131,7 +147,7 @@ vector <Client> LoadCleintsDataFromFile(string FileName)
 			}
 		}
 	}
-	MyFile.close();
+	file.close();
 
 	return vClients;
 }
@@ -227,29 +243,35 @@ void PrintClientCard(Client client)
 	cout << "\nAccount Balance: " << client.Balance;
 }
 
-bool Add()
+void Add()
 {
 	Client  client;
+	char add = 'n';
 	fstream file;
-	AddClient(client);
-	string Record = "";
-	Record = ConvertRecordToLineString(client, "#//#");
-	file.open(FileName, ios::out | ios::app);
-	if (file.is_open())
-	{
-		if (Record != "") {
-			file << Record << endl;
-			cout << "The Client saved Succussfully!" << endl;
-			return true;
-		}
-	}
-	else
-	{
-		cout << "Error Saved Client!" << endl;
-		return false;
-	}
-	file.close();
+	do {
+		AddClient(client);
+		string Record = "";
+		Record = ConvertRecordToLineString(client, "#//#");
+		file.open(FileName, ios::out | ios::app);
+		if (file.is_open())
+		{
+			if (Record != "") {
+				file << Record;
+				cout << "The Client saved Succussfully!" << endl;
 
+
+			}
+
+			else
+			{
+				cout << "Error Saved Client!" << endl;
+			}
+		}
+		file.close();
+		cout << "Do you Add another Client ? y/n :";
+		cin >> add;
+
+	} while (add == 'y' || add == 'Y');
 
 }
 bool FindClientByAccountNumber(string AccountNumber, vector
@@ -281,29 +303,24 @@ bool MarkClientToAction(string AccountNumber, vector<Client>& vclient)
 }
 vector <Client>SaveCleintsDataToFile(string FileName, vector<Client>vClients)
 {
-	fstream MyFile;
-	MyFile.open(FileName, ios::out);//overwrite
+	file.open(FileName, ios::out);//overwrite
 	string DataLine;
-	if (MyFile.is_open())
+	if (file.is_open())
 	{
 		for (Client C : vClients)
 		{
 			if (C.MarkDeleted == false)
 			{
-
-			
 				DataLine = ConvertRecordToLineString(C);
-				MyFile << DataLine << endl;
+				file << DataLine << endl;
 			}
-			
-
 		}
-		MyFile.close();
+		file.close();
 	}
 	return vClients;
 }
 
-bool Delete(string AccountNumber )
+bool Delete(string AccountNumber)
 {
 	vector<Client> vClients = LoadCleintsDataFromFile(FileName);
 
@@ -321,7 +338,7 @@ bool Delete(string AccountNumber )
 			MarkClientToAction(AccountNumber,
 				vClients);
 			SaveCleintsDataToFile(FileName, vClients);
-			 vClients = LoadCleintsDataFromFile(FileName);
+			vClients = LoadCleintsDataFromFile(FileName);
 			cout << "\n\nClient Deleted Successfully.";
 
 			return true;
@@ -343,12 +360,11 @@ bool Update(string AccountNumber)
 	if (FindClientByAccountNumber(AccountNumber, vClients, client))
 	{
 		PrintClientCard(client);
-		cout<< "Are you sure you want Update this client? y/n ? ";
+		cout << "Are you sure you want Update this client? y/n ? ";
 		cin >> answer;
 
 		if (answer == 'y' || answer == 'Y')
 		{
-			
 			for (Client& C : vClients)
 			{
 				if (C.AccountNumber == AccountNumber)
@@ -358,7 +374,6 @@ bool Update(string AccountNumber)
 				}
 			}
 			SaveCleintsDataToFile(FileName, vClients);
-			//Refresh Clients
 
 			cout << "\n\nClient Updated Successfully.";
 			return true;
@@ -388,7 +403,7 @@ bool Search(string AccountNumber)
 		<< ") is Not Found!";
 	return false;
 }
-void MainManue(int &choice)
+void MainManue(int& choice)
 {
 	cout <<
 		"\n_______________________________________________________\n";
@@ -401,22 +416,21 @@ void MainManue(int &choice)
 	cout <<
 		"\n_______________________________________________________\n";
 	choice = ReadPositiveNumber(" Select Number  from Manue ?");
-
 }
 void StarAction(int Selected)
 {
 	system("cls");
 	HeaderAction(Selected);
 
-	if(Selected==1)
+	if (Selected == 1)
 		ShowAllClients();
 	string ReadAccountNumber;
 
 	switch (Selected)
 	{
-	case 2: Add();				
+	case 2: Add();
 		break;
-		case 3: Update(ReadAccountNumber= ReadString("Enter The Account Number:"));
+	case 3: Update(ReadAccountNumber = ReadString("Enter The Account Number:"));
 		break;
 
 	case 4: Delete(ReadAccountNumber = ReadString("Enter The Account Number:"));
@@ -425,29 +439,19 @@ void StarAction(int Selected)
 	case 5: Search(ReadAccountNumber = ReadString("Enter The Account Number:"));
 		break;
 	}
-
 }
-
-
-
 
 void Start() {
 	int Selected;
 
 	do {
 		MainManue(Selected);
-
 		StarAction(Selected);
-		cout<<"\n\n\nEnter Any Key to Go Home Page?" ;
+		cout << "\n\n\nEnter Any Key to Go Home Page?";
 		system("pause>0");
 		system("cls");
 
-
-
-	} 
-	while (Selected != 6);
-	
-
+	} while (Selected != 6);
 
 }
 int main()
@@ -456,4 +460,3 @@ int main()
 
 	return 0;
 }
-
