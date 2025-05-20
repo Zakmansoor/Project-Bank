@@ -11,12 +11,10 @@ A console-based client management system for banking operations with persistent 
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/Zakmansoor/Project-Bank/master/Annotation%202025-05-20%20231645.png" width="800" alt="Main Interface">
-  <em>Main menu interface showing available operations</em>
   
   <br><br>
   
   <img src="https://raw.githubusercontent.com/Zakmansoor/Project-Bank/master/ShowTable.png" width="800" alt="Client Listing">
-  <em>Tabular display of client records</em>
 </div>
 
 ## Table of Contents
