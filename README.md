@@ -7,10 +7,10 @@
 
 A console-based client management system for banking operations with persistent file storage.
 
-![Main Interface](https://raw.githubusercontent.com/Zakmansoor/Project-Bank/master/Annotation%202025-05-20%20231645.png)
+![Main Interface](https://github.com/Zakmansoor/Project-Bank/master/Annotation%202025-05-20%20231645.png)
 *Main application interface showing client management options*
 
-![Client Listing](https://raw.githubusercontent.com/Zakmansoor/Project-Bank/master/ShowTable.png)
+![Client Listing](https://github.com.com/Zakmansoor/Project-Bank/master/ShowTable.png)
 *Tabular display of client records*
 
 ## Table of Contents
