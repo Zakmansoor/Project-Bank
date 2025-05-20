@@ -5,7 +5,7 @@
 
 A console-based banking client management system with CRUD operations and file storage.
 
-![Demo Screenshot](https://via.placeholder.com/800x400.png?text=Client+Management+System+Demo)
+![Demo Screenshot]([https://via.placeholder.com/800x400.png](https://github.com/Zakmansoor/Project-Bank/blob/master/Annotation%202025-05-20%20231645.png)?text=Client+Management+System+Demo)
 *(Replace with actual screenshot link after uploading)*
 
 ## Features ✨
