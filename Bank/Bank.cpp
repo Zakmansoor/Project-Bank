@@ -5,8 +5,9 @@
 
 #include <vector>
 using namespace std;
+enum enumOperationTransaction{Depsite=1,Withdraw=2,TotalBalance=3,GoBack=4};
 string FileName = "Client.txt";
-fstream file;
+//fstream file;
 int indexfile = 1;
 const int Max_Size = 1024;
 struct
@@ -19,24 +20,26 @@ struct
 	double Balance = 00.00;
 	bool MarkDeleted = false;
 };
-void OpenFile()
-{
-	if (file.is_open())
-		file.close();
-	string FileName = "client" + to_string(indexfile) + ".txt";
-	file.open(FileName, ios::out | ios::app);
-	if (!file.is_open())
-		cout << "error When Opern file";
-	indexfile++;
 
-}
-void WriteFile(string& Data)
-{
-	if (!file.is_open() || file.tellp() > Max_Size)
-		OpenFile();
-	file << Data;
-}
-
+//void OpenFile()
+//{
+//	if (file.is_open())
+//		file.close();
+//	string FileName = "client" + to_string(indexfile) + ".txt";
+//	file.open(FileName, ios::out | ios::app);
+//	if (!file.is_open())
+//		cout << "error When Opern file";
+//	indexfile++;
+//
+//}
+//void WriteFile(string& Data)
+//{
+//	if (!file.is_open() || file.tellp() > Max_Size)
+//		OpenFile();
+//	file << Data;
+//}
+//
+void TransactonManue();
 int ReadPositiveNumber(string message) {
 	int Number;
 	do {
@@ -69,8 +72,21 @@ void HeaderAction(int choice)
 	case 4:cout << right << setw(70) << " | Page  Delete Client |" << "\n\n\n";
 	case 5:cout << right << setw(70) << " | Page  Search  Client |" << "\n\n\n";
 		break;
+	case 6:cout << right << setw(70) << " | Transaction Balance Client |" << "\n\n\n";
+		break;
 	default:cout << right << setw(70) << " | Home Page     |" << "\n\n\n";
 		break;
+	}
+}void HeaderTransaction(int choice)
+{
+	switch (choice) {
+	case 1:cout << right << setw(70) << " | Deposite Page |" << "\n\n\n";
+		break;
+	case 2:cout << right << setw(70) << " | Withdraw Page |" << "\n\n\n";
+		break;
+	case 3:cout << right << setw(70) << " | Total Balance |" << "\n\n\n";
+		break;
+	
 	}
 }
 char ReadChar(string message)
@@ -97,6 +113,8 @@ string ConvertRecordToLineString(Client client, string delim = "#//#")
 	return  Record;
 
 }
+void MainManue();
+
 vector<string> SplitString(string st, string delim = "#//#")
 {
 	short pos;
@@ -165,6 +183,7 @@ void HeaderClientTable(vector<Client> client)
 	cout <<
 		"\n_______________________________________________________";
 	cout << "_____________________________________________________\n" << endl;
+
 }
 
 void ShowAllClients()
@@ -183,7 +202,36 @@ void ShowAllClients()
 	}
 }
 
+void ShowBalanceClients()
+{
+	double Sum = 0.0;
+	vector<Client> vClients = LoadCleintsDataFromFile(FileName);
+	cout << "\n\t\t\t\t\tClient List (" << vClients.size() << ")";
+	cout <<"\n___________________________________________________________________";
+	cout << "_________________________________________\n" << endl;
+	cout << "| " << left << setw(16) << "Accout Number";
+	cout << "| " << left << setw(40) << "Pin Code";
+	
+	cout << "| " << left << setw(16) << "Balance";
+	cout <<
+		"\n_______________________________________________________";
+	cout << "_____________________________________________________\n" << endl;
 
+	for (Client client : vClients)
+	{
+		cout << "| " << setw(16) << left << client.AccountNumber;
+		cout << "| " << setw(40) << left << client.pinCode;
+		cout << "| " << setw(16) << left << client.Balance;
+		cout << "\n";
+		Sum += client.Balance;
+	}
+	
+	cout <<
+		"\n_______________________________________________________";
+	cout << "_____________________________________________________\n" << endl;
+	cout << right << setw(60) << " Total BALANCE = "<<Sum;
+
+}
 
 
 bool CheckCkclientIsFound(string  Number)
@@ -219,10 +267,11 @@ void AddClient(Client& client)
 	cout << "Enter The Balance:";
 	cin >> client.Balance;
 
-}void UpdateClient(Client& client)
+}Client UpdateClient(string AccountNumber)
 {
 
-
+	Client client;
+	client.AccountNumber = AccountNumber;
 	cout << "Enter The Pin Code:";
 	getline(cin >> ws, client.pinCode);
 	cout << "Enter The Name:";
@@ -231,16 +280,19 @@ void AddClient(Client& client)
 	getline(cin >> ws, client.PhoneNumber);
 	cout << "Enter The Balance:";
 	cin >> client.Balance;
-
+	return client;
 }
 void PrintClientCard(Client client)
 {
+	cout << "\n--------------------------------------------\n";
+
 	cout << "\nThe following are the client details:\n";
 	cout << "\nAccout Number: " << client.AccountNumber;
 	cout << "\nPin Code : " << client.pinCode;
 	cout << "\nName : " << client.Name;
 	cout << "\nPhone : " << client.PhoneNumber;
 	cout << "\nAccount Balance: " << client.Balance;
+	cout << "\n--------------------------------------------\n";
 }
 
 void Add()
@@ -256,7 +308,7 @@ void Add()
 		if (file.is_open())
 		{
 			if (Record != "") {
-				file << Record;
+				file << Record << endl;
 				cout << "The Client saved Succussfully!" << endl;
 
 
@@ -271,7 +323,8 @@ void Add()
 		cout << "Do you Add another Client ? y/n :";
 		cin >> add;
 
-	} while (add == 'y' || add == 'Y');
+	} 
+	while (add == 'y' || add == 'Y');
 
 }
 bool FindClientByAccountNumber(string AccountNumber, vector
@@ -285,6 +338,8 @@ bool FindClientByAccountNumber(string AccountNumber, vector
 			return true;
 		}
 	}
+	cout << "\nClient with Account Number (" << AccountNumber
+		<< ") is Not Found!";
 	return false;
 }
 bool MarkClientToAction(string AccountNumber, vector<Client>& vclient)
@@ -303,6 +358,7 @@ bool MarkClientToAction(string AccountNumber, vector<Client>& vclient)
 }
 vector <Client>SaveCleintsDataToFile(string FileName, vector<Client>vClients)
 {
+	fstream file;
 	file.open(FileName, ios::out);//overwrite
 	string DataLine;
 	if (file.is_open())
@@ -369,7 +425,7 @@ bool Update(string AccountNumber)
 			{
 				if (C.AccountNumber == AccountNumber)
 				{
-					UpdateClient(C);
+					C=UpdateClient(AccountNumber);
 					break;
 				}
 			}
@@ -379,12 +435,7 @@ bool Update(string AccountNumber)
 			return true;
 		}
 	}
-	else
-	{
-		cout << "\nClient with Account Number (" << AccountNumber
-			<< ") is Not Found!";
-		return false;
-	}
+	
 }
 bool Search(string AccountNumber)
 {
@@ -403,7 +454,207 @@ bool Search(string AccountNumber)
 		<< ") is Not Found!";
 	return false;
 }
-void MainManue(int& choice)
+void Pause()
+{
+	cout << "\n\n\nEnter Any Key to Go Home Page?";
+	system("pause>0");
+
+
+	
+}
+
+void GoToManueTransaction()
+{
+	cout << "\n\n\nEnter Any Key to Go Home Page?";
+	system("pause>0");
+	TransactonManue();
+
+
+
+}
+bool ValidateAmoun(double amount, double amountentry) {
+	if (amount > amountentry)
+		return true;
+	cout << "\nClient Updated error.\n";
+
+	cout << "The Entery Amount Is biggest than Balance:!!" << endl;
+	return false;
+}
+double ShowAllBalance()
+{
+	double Sum = 0.0;
+	vector<Client> vclient = LoadCleintsDataFromFile(FileName);
+	
+		for (Client& client : vclient)
+		{
+			Sum += client.Balance;
+		}
+		return Sum;
+}
+
+void Deposit(enumOperationTransaction Operation)
+{
+	string AccountNumber;
+	cout << "=========================" << endl;
+	cout << "Page Deposit Your Balance" << endl;
+	cout << "=========================" << endl;
+	double amount = 00.00;
+	bool check = false;
+	bool find = false;
+
+	Client client;
+	vector<Client> vclient = LoadCleintsDataFromFile(FileName);
+	do {
+		AccountNumber = ReadString("Enter AccountNumber :");
+		if (FindClientByAccountNumber(AccountNumber, vclient, client))
+		{
+			find = true;
+			PrintClientCard(client);
+
+
+
+			for (Client& client : vclient) {
+				if (client.AccountNumber == AccountNumber) {
+					cout << "Enter Amount To Deposit From Your Balance? " << endl;
+					cin >> amount;
+					if (enumOperationTransaction::Depsite && ValidateAmoun(client.Balance, amount))
+					{
+
+						client.Balance = client.Balance - amount;
+						cout << "\n\nClient Updated Successfully.";
+						check = true;
+
+						break;
+					
+
+
+						
+					}
+					 if (enumOperationTransaction::Withdraw)
+					{
+
+						client.Balance = client.Balance + amount;
+						cout << "\n\nClient Updated Successfully.";
+						check = true;
+
+						break;
+
+
+					}
+
+
+				}
+			}
+
+		}
+	}
+	while (amount < 0 || check == false||find==false);
+
+	
+	SaveCleintsDataToFile(FileName, vclient);
+
+}
+void StarTransaction(enumOperationTransaction Choice)
+{
+
+	system("cls");
+	HeaderTransaction(Choice);
+
+
+
+	switch (Choice)
+	{
+	case enumOperationTransaction::Depsite:
+		system("cls");
+		Deposit(Choice);
+		GoToManueTransaction();
+
+
+
+		break;
+	case enumOperationTransaction::Withdraw:
+		system("cls");
+
+		Deposit(Choice);
+		GoToManueTransaction();
+
+		break;
+
+
+	case  enumOperationTransaction::TotalBalance:
+		system("cls");
+
+		ShowBalanceClients();
+		GoToManueTransaction();
+		break;
+	case  enumOperationTransaction::GoBack:
+		MainManue();
+		break;
+	default:
+		system("cls");
+
+		TransactonManue();
+	}
+}
+void StarAction(int Selected)
+{
+	system("cls");
+	
+	HeaderAction(Selected);
+	
+	string ReadAccountNumber;
+
+	switch (Selected)
+	{
+	case 1: ShowAllClients();
+		Pause();
+		system("cls");
+		MainManue();
+		break;
+	case 2: Add();
+		Pause();
+		system("cls");
+		MainManue();
+		break;
+	case 3: Update(ReadAccountNumber = ReadString("Enter The Account Number:"));
+		Pause();
+		system("cls");
+		MainManue();
+
+		break;
+
+	case 4: Delete(ReadAccountNumber = ReadString("Enter The Account Number:"));
+		Pause();
+		system("cls");
+		MainManue();
+
+		break;
+
+	case 5: Search(ReadAccountNumber = ReadString("Enter The Account Number:"));
+		Pause();
+		system("cls");
+		MainManue();
+
+		break;
+
+	case 6: 
+		TransactonManue();
+
+		system("cls");
+		MainManue();
+
+		
+		break;
+	}
+}
+
+int main()
+{
+	MainManue();
+
+	return 0;
+}
+void MainManue()
 {
 	cout <<
 		"\n_______________________________________________________\n";
@@ -412,51 +663,21 @@ void MainManue(int& choice)
 	cout << right << setw(10) << "[3]" << "Update Client " << endl;
 	cout << right << setw(10) << "[4]" << "Delete Client" << endl;
 	cout << right << setw(10) << "[5]" << "Find Client" << endl;
-	cout << right << setw(10) << "[6]" << "Exit" << endl;
+	cout << right << setw(10) << "[6]" << "Transaction" << endl;
+	cout << right << setw(10) << "[7]" << "Exit" << endl;
 	cout <<
 		"\n_______________________________________________________\n";
-	choice = ReadPositiveNumber(" Select Number  from Manue ?");
+	StarAction( ReadPositiveNumber(" Select Number  from Manue ?"));
 }
-void StarAction(int Selected)
-{
+void TransactonManue(){
 	system("cls");
-	HeaderAction(Selected);
-
-	if (Selected == 1)
-		ShowAllClients();
-	string ReadAccountNumber;
-
-	switch (Selected)
-	{
-	case 2: Add();
-		break;
-	case 3: Update(ReadAccountNumber = ReadString("Enter The Account Number:"));
-		break;
-
-	case 4: Delete(ReadAccountNumber = ReadString("Enter The Account Number:"));
-		break;
-
-	case 5: Search(ReadAccountNumber = ReadString("Enter The Account Number:"));
-		break;
-	}
-}
-
-void Start() {
-	int Selected;
-
-	do {
-		MainManue(Selected);
-		StarAction(Selected);
-		cout << "\n\n\nEnter Any Key to Go Home Page?";
-		system("pause>0");
-		system("cls");
-
-	} while (Selected != 6);
-
-}
-int main()
-{
-	Start();
-
-	return 0;
+	cout <<
+		"\n_______________________________________________________\n";
+	cout << right << setw(10) << "[1]" << "Deposit" << endl;
+	cout << right << setw(10) << "[2]" << "withdraw" << endl;
+	cout << right << setw(10) << "[3]" << "Total Balance " << endl;
+	cout << right << setw(10) << "[4]" << "MainManue" << endl;
+	cout <<
+		"\n_______________________________________________________\n";
+	StarTransaction((enumOperationTransaction)ReadPositiveNumber("Choice Proccess From Manue?"));
 }
