@@ -1,21 +1,5 @@
-# Client Management System 🏦
 
-[![GitHub License](https://img.shields.io/github/license/Zakmansoor/Project-Bank)](https://github.com/Zakmansoor/Project-Bank/blob/master/LICENSE)
-[![C++ Version](https://img.shields.io/badge/C++-17-blue)](https://isocpp.org/)
-[![GitHub Issues](https://img.shields.io/github/issues/Zakmansoor/Project-Bank)](https://github.com/Zakmansoor/Project-Bank/issues)
-[![GitHub Stars](https://img.shields.io/github/stars/Zakmansoor/Project-Bank)](https://github.com/Zakmansoor/Project-Bank/stargazers)
 
-A console-based client management system for banking operations with persistent file storage.
-
-## Application Screenshots 📸
-
-<div align="center">
-  <img src="https://raw.githubusercontent.com/Zakmansoor/Project-Bank/master/Annotation%202025-05-20%20231645.png" width="800" alt="Main Interface">
-  
-  <br><br>
-  
-  <img src="https://raw.githubusercontent.com/Zakmansoor/Project-Bank/master/ShowTable.png" width="800" alt="Client Listing">
-</div>
 
 ## Table of Contents
 - [Features](#features-)
